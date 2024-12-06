@@ -1,0 +1,28 @@
+<div x-data="Recettes('./src/data/recipes.json')">
+    <header x-data="{burgermenu: false}" class="shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+        <div class="flex flex-col bg-fond w-full lg:flex-row lg:justify-between lg:items-center">
+            <div class="flex flex-row justify-between items-center">
+                <div class="flex flex-col mt-4 mb-4 ml-4 lg:mt-0 lg:mb-0 lg:ml-0 lg:flex-row items-center">
+                    <img src="src/img/logo.png" alt="" class="w-20 lg:w-20 lg:m-5">
+                    <div class="flex">
+                        <p class="ml-2 mr-2 text-2xl font-semibold text-text" x-text="filteredRecipes().length"></p>
+                        <h1 class="text-2xl font-semibold text-text souligne">RecettesDuChef</h1>
+                    </div>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-16 lg:hidden cursor-pointer" fill="none"
+                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" @click="burgermenu = !burgermenu">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </div>
+            <nav class="flex flex-col gap-4 mb-8 mt-8 text-center text-xl lg:flex-row lg:gap-16 lg:pr-16 lg:mb-0 lg:mt-0"
+                x-show="burgermenu || window.innerWidth >= 1024" x-transition @click.outside="burgermenu = false"
+                x-cloak>
+                <a href="" class="text-text souligne">Accueil</a>
+                <a href="" class="text-text souligne">À propos</a>
+                <a href="" class="text-text souligne">Contact</a>
+                <a href="" class="text-text souligne">Se connecter</a>
+            </nav>
+        </div>
+    </header>
+</div>

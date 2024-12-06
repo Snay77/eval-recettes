@@ -1,0 +1,106 @@
+<div x-data="Recettes('./src/data/recipes.json')">
+
+    <!-- Filtre des recettes par difficultés -->
+    <div class="max-w-sm mx-auto">
+        <label class="block text-text mb-2 mt-2 font-medium">Filtrer par difficulté</label>
+        <select x-model="selectedDifficulty"
+            class="border rounded-lg focus:ring-red-900 focus:border-red-900 block w-full p-2.5 bg-red-800 border-gray-600 placeholder-gray-400 text-fond">
+            <option value="">Toutes</option>
+            <option value="facile">Facile</option>
+            <option value="moyenne">Moyenne</option>
+            <option value="difficile">Difficile</option>
+            <option value="très difficile">Cas sans recette</option>
+        </select>
+
+        <!-- Affiche un texte avec le nombre de recette pour cette difficulté -->
+        <p class="mt-2 text-text">La difficulté <span x-text="selectedDifficulty"></span> contient <span
+                x-text="filteredRecipes().length"></span> recettes</p>
+    </div>
+
+    <!-- Affiche un message si aucune recette n'est dans la difficulté choisi -->
+    <div x-show="filteredRecipes().length === 0" class="text-center text-xl text-red-800 mt-6">
+        Aucune recette pour cette difficulté trouvé
+    </div>
+
+    <!-- Liste de toutes les recettes sous formes de card -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-4">
+        <template x-for="recipe in filteredRecipes()" :key="recipe.id">
+            <div class="bg-fond hover:bg-fondhover rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                @click="openRecipe(recipe)">
+                <div class="bg-fond p-6 text-text flex flex-col h-full">
+                    <h2 class="text-xl font-semibold" x-text="recipe.title"></h2>
+                    <p class="text-sm mt-2" x-text="recipe.category"></p>
+                    <img :src="recipe.imageUrl" :alt="recipe.title" class="mt-4 w-full h-40 object-cover rounded-md">
+                    <p class="mt-4 text-base" x-text="'Difficulté : ' + recipe.difficulty"></p>
+                    <p class="text-base" x-text="'Temps : ' + recipe.preparationTime + ' min'"></p>
+                    <p class="text-base" x-text="'Portions : ' + recipe.servings"></p>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- Card détaillé qui apparait après le click sur une card de la liste  -->
+    <div x-show="selectRecipe" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+        x-transition>
+        <div class="bg-white p-6 rounded-lg max-w-lg w-full">
+            <button @click="selectRecipe = null" class="absolute top-2 right-4 text-4xl font-bold text-fond">X</button>
+            <img :src="selectRecipe.imageUrl" class="mt-4 w-full h-40 object-cover rounded-md mb-8">
+            <h2 class="text-2xl font-semibold" x-text="selectRecipe.title"></h2>
+            <p class="mt-2" x-text="'Difficulté : ' + selectRecipe.difficulty"></p>
+            <p class="mt-2" x-text="'Temps de préparation : ' + selectRecipe.preparationTime + ' min'"></p>
+            <p class="mt-2" x-text="'Portions : ' + selectRecipe.servings"></p>
+
+            <h3 class="mt-4 text-xl font-semibold">Ingrédients</h3>
+            <ul>
+                <template x-for="(ingredient, index) in selectRecipe.ingredients" :key="index">
+                    <li x-text="ingredient.quantity + ' ' + ingredient.unit + ' ' + ingredient.name"></li>
+                </template>
+            </ul>
+
+            <h3 class="mt-4 text-xl font-semibold">Instructions</h3>
+
+            <!-- Barre de progression -->
+            <!-- <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-4">
+                <div class="bg-blue-600 h-2.5 rounded-full" 
+                     :style="`width: ${(currentStep / selectRecipe.instructions.length) * 100}%`">
+                </div>
+            </div> -->
+
+            <div x-show="selectRecipe.instructions.length" x-transition.opacity>
+                <p class="text-sm" x-text="selectRecipe.instructions[currentEtape]"></p>
+                <div class="mt-4 flex flex-col lg:flex-row items-center gap-8 justify-between">
+
+                    <!-- Aller à l'étape précédente -->
+                    <button @click="prevEtape()" :class="{
+                        'bg-red-300 text-text cursor-not-allowed': currentEtape === 0,
+                        'bg-red-800 text-fond': currentEtape !== 0,
+                        'px-4 py-2 rounded-md': true
+                        }" :disabled="currentEtape === 0">
+                        Précédent
+                    </button>
+
+                    <!-- Numérotation des étapes -->
+                    <div class="flex space-x-2">
+                        <template x-for="(Etape, index) in selectRecipe.instructions" :key="index">
+                            <button @click="goToEtape(index)" :class="{
+                                'bg-red-300': currentEtape !== index,
+                                'bg-red-800 text-fond': currentEtape === index,
+                                'px-3 py-2 rounded-md': true
+                                }">
+                                <span x-text="index + 1"></span>
+                            </button>
+                        </template>
+                    </div>
+
+                    <!-- Aller à l'étape suivante -->
+                    <button @click="nextEtape()" :class="{'bg-red-300 text-text cursor-not-allowed': currentEtape === selectRecipe.instructions.length - 1,
+                        'bg-red-800 text-fond': currentEtape !== selectRecipe.instructions.length - 1,
+                        'px-4 py-2 rounded-md': true
+                        }" :disabled="currentEtape === selectRecipe.instructions.length - 1">
+                        Suivant
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
