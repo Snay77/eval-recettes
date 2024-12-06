@@ -54,6 +54,11 @@ export default function Recettes(jsonFile) {
             if (this.currentEtape > 0) {
                 this.currentEtape--;
             }
-        }
+        },
+
+        // Si la recette est en favori l'enlève et sinon fait l'inverse
+        toggleFavori(recipe) {
+            recipe.isFavorite = !recipe.isFavorite;
+        },
     }
 }
